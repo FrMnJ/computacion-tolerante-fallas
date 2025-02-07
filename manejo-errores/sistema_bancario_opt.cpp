@@ -5,19 +5,21 @@
 #include <chrono>
 #include <thread>
 #include <optional>
+#include <algorithm>
+#include <string_view>
 
 using namespace std;
 
-void menu(double &saldo, string name);
+void menu(double &saldo, string_view name);
 void deposito(double &saldo, double cantidad);
 void retiro(double &saldo, double cantidad);
-string pedirNombre();
-string pedirContrasena();
+string_view pedirNombre();
+string_view pedirContrasena();
 optional<double> obtenerCantidad();
 
 int main() {
-    string name;
-    string password;
+    string_view name;
+    string_view password;
     double saldo = 0;
 
     cout<<endl<<"Banco NovaSol"<<endl<<endl;
@@ -32,7 +34,7 @@ int main() {
     return 0;
 }
 
-string pedirNombre() {
+string_view pedirNombre() {
     string name;
     cout<<"Ingrese su nombre: ";
     getline(cin, name);
@@ -63,7 +65,7 @@ string pedirNombre() {
     return name;
 }
 
-string pedirContrasena() {
+string_view pedirContrasena() {
     string password;
     bool tieneMayuscula = false, tieneMinuscula = false, tieneNumero = false, tieneEspecial = false;
     unordered_set<char> caracteresEspeciales = {'!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '-', '_', '=',
@@ -99,14 +101,15 @@ string pedirContrasena() {
     return password;
 }
 
-void menu(double &saldo, string name) {
+void menu(double &saldo, string_view name) {
     int opcion;
     double cantidad;
     bool success;
     do {
         success = false;
         cout<<"Bienvenido "<<name<<endl;
-        cout.imbue(locale("en_US.UTF-8"));
+        // This line is not working in Ubuntu
+        // cout.imbue(locale("en_US.UTF-8"));
         cout<<fixed<<setprecision(2);
         cout<<"Su saldo actual es: $"<<saldo<<endl<<endl;
         cout<<"Seleccione una opción"<<endl;
