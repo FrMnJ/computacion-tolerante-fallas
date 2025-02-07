@@ -1,23 +1,26 @@
+#include "Input.h"
+
 #include <iostream>
-#include <stdexcept> 
 #include <unordered_set>
-#include <iomanip> 
+#include <iomanip>
 #include <locale>
 #include <chrono>
 #include <thread>
+#include <optional>
+#include <algorithm>
+#include <string_view>
+
 
 using namespace std;
 
-void menu(double &saldo, string name);
+void menu(double &saldo, string_view name);
 void deposito(double &saldo, double cantidad);
 void retiro(double &saldo, double cantidad);
-string pedirNombre();
-string pedirContrasena();
 double obtenerCantidad();
 
 int main() {
-    string name;
-    string password;
+    string_view name;
+    string_view password;
     double saldo = 0;
 
     cout<<endl<<"Banco NovaSol"<<endl<<endl;
@@ -30,107 +33,15 @@ int main() {
     return 0;
 }
 
-string pedirNombre() {
-    string name;
-    try {
-        cout<<"Ingrese su nombre: ";
-        getline(cin, name);
-
-        if (name.empty()) {
-            throw invalid_argument("No ingresaste nada.");
-        }
-
-        for (char c : name) {
-            if (!isalpha(c) && c != ' ') {
-                throw invalid_argument("El nombre debe contener solo letras.");
-            }
-        }
-        
-        if (name.length() < 3){
-            throw invalid_argument("El nombre debe tener al menos 3 caracteres");
-        }
-
-        if (name.length() > 20){
-            throw invalid_argument("El nombre debe tener máximo 20 caracteres");
-        }
-
-        return name;
-    }
-    catch (const invalid_argument &e) {
-        cerr<<e.what()<<endl;
-        return pedirNombre();
-    }
-    catch (const exception &e) {
-        cerr<<e.what()<<endl;
-        return pedirNombre();
-    }
-}
-
-string pedirContrasena() {
-    string password;
-    try {
-        bool tieneMayuscula = false, tieneMinuscula = false, tieneNumero = false, tieneEspecial = false;
-        unordered_set<char> caracteresEspeciales = {'!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '-', '_', '=',
-                                                    '+', '[', ']', '{', '}', '|', ';', ':', '\'', '"', ',', '.', '<',
-                                                    '>', '?', '/'};
-        cout<<"Ingrese su contraseña:";
-        getline(cin, password);
-
-        if (password.empty()) {
-            throw invalid_argument("No ingresaste nada.");
-        }
-
-        if (password.length() < 8) {
-            throw invalid_argument("La contraseña debe tener al menos 8 caracteres.");
-        }
-
-        if (password.length() > 20) {
-            throw invalid_argument("La contraseña no debe exceder los 20 caracteres.");
-        }
-
-        for (char c : password) {
-            if (isupper(c)) tieneMayuscula = true;
-            if (islower(c)) tieneMinuscula = true;
-            if (isdigit(c)) tieneNumero = true;
-            if (caracteresEspeciales.count(c)) tieneEspecial = true;
-        }
-
-        if (!tieneMayuscula) {
-            throw invalid_argument("La contraseña debe contener al menos una letra mayúscula.");
-        }
-
-        if (!tieneMinuscula) {
-            throw invalid_argument("La contraseña debe contener al menos una letra minúscula.");
-        }
-
-        if (!tieneNumero) {
-            throw invalid_argument("La contraseña debe contener al menos un número.");
-        }
-
-        if (!tieneEspecial) {
-            throw invalid_argument("La contraseña debe contener al menos un carácter especial (!@#$%^&*).");
-        }
-        cout<<"Ingresando..."<<endl<<endl;
-        return password;
-    }
-    catch (const invalid_argument &e) {
-        cerr<<e.what()<<endl;
-        return pedirContrasena();
-    }
-    catch (const exception &e) {
-        cerr<<e.what()<<endl;
-        return pedirContrasena(); 
-    }
-}
-
-void menu(double &saldo, string name) {
+void menu(double &saldo, string_view name) {
     int opcion;
     double cantidad;
     bool success;
     do{
         success = false;
         cout<<"Bienvenido "<<name<<endl;
-        cout.imbue(locale("en_US.UTF-8"));
+        // Not working in Ubuntu
+        //cout.imbue(locale("en_US.UTF-8"));
         cout<<fixed<<setprecision(2);
         cout<<"Su saldo actual es: $"<<saldo<<endl<<endl;
         cout<<"Seleccione una opción"<<endl;
